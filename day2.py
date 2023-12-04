@@ -11,7 +11,7 @@ max_vals = {
 }
 
 
-def is_possible_subset(subset):
+def get_subset_max(max_vals, subset):
     cubes = subset.split(",")
     for cube in cubes:
         parts = cube.strip().split(" ")
@@ -19,29 +19,27 @@ def is_possible_subset(subset):
         color = parts[1]
 
         if max_vals[color] < count:
-            return False
-
-    return True
+            max_vals[color] = count
 
 
-def is_possible(game):
+def game_power(game):
+    max_vals = {"red": 0, "green": 0, "blue": 0}
+
     subsets = game.split(";")
     for subset in subsets:
-        if not is_possible_subset(subset):
-            return False
-    return True
+        get_subset_max(max_vals, subset)
+
+    return max_vals["red"] * max_vals["green"] * max_vals["blue"]
 
 
 with open("day2.txt") as f:
     lines = f.readlines()
 
-possible_games = []
+game_results = []
 for line in lines:
     parts = line.strip().split(":")
     game_num = int(parts[0].split()[1])
+    game_results.append(game_power(parts[1]))
 
-    if is_possible(parts[1]):
-        possible_games.append(game_num)
-
-print(possible_games)
-print(sum(possible_games))
+print(game_results)
+print(sum(game_results))
