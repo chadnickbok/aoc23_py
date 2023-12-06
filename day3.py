@@ -12,6 +12,7 @@ for line in lines:
 
 lines = stripped_lines
 
+gears = {}
 part_numbers = []
 for i in range(0, len(lines)):
     for m in re.finditer("\d+", lines[i]):
@@ -33,12 +34,23 @@ for i in range(0, len(lines)):
             down = len(lines)
 
         is_part_number = False
+        cur_gears = set()
         for y in range(up, down):
             for x in range(l, r):
-                if not lines[y][x].isdigit() and not lines[y][x] == ".":
-                    is_part_number = True
+                if lines[y][x] == "*":
+                    loc = (y, x)
+                    cur_gears.add(loc)
 
-        if is_part_number:
-            part_numbers.append(int(m.group()))
+        v = int(m.group())
+        for gear in cur_gears:
+            if gear in gears:
+                gears[gear].append(v)
+            else:
+                gears[gear] = [v]
 
-print(sum(part_numbers))
+gear_ratios = []
+for g in gears.values():
+    if len(g) == 2:
+        gear_ratios.append(g[0] * g[1])
+
+print(sum(gear_ratios))
