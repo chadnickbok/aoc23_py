@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
 
 import re
+import sys
 
-with open("day3.txt") as f:
+with open(sys.argv[1]) as f:
     lines = f.readlines()
+
+stripped_lines = []
+for line in lines:
+    stripped_lines.append(line.strip())
+
+lines = stripped_lines
 
 part_numbers = []
 for i in range(0, len(lines)):
@@ -14,7 +21,7 @@ for i in range(0, len(lines)):
         l = start - 1
         if l < 0:
             l = 0
-        r = end + 2
+        r = end + 1
         if r > len(lines[0]):
             r = len(lines[0])
         up = i - 1
@@ -33,7 +40,5 @@ for i in range(0, len(lines)):
 
         if is_part_number:
             part_numbers.append(int(m.group()))
-        print(m.group(), l, r, up, down, is_part_number)
 
-#print(part_numbers)
 print(sum(part_numbers))
