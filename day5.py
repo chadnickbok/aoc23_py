@@ -8,6 +8,12 @@ with open(sys.argv[1]) as f:
 seeds = [int(x) for x in lines[0].strip().split(":")[1].strip().split()]
 print(seeds)
 
+seed_count = 0
+for i in range(0, len(seeds) // 2):
+    seed_count += seeds[i * 2 + 1]
+print("Seed count:", seed_count)
+
+
 class RangeMap():
     def __init__(self, dest_start, source_start, range_len): 
         self.dest_start = dest_start
@@ -15,7 +21,7 @@ class RangeMap():
         self.range_len = range_len
 
     def contains_value(self, val):
-        if val > self.source_start and val < self.source_start + self.range_len:
+        if val >= self.source_start and val < self.source_start + self.range_len:
             return True
         return False
 
@@ -98,10 +104,22 @@ def map_seed_to_location(seed):
     humidity = temperature_to_humidity.map_value(temperature)
     location = humidity_to_location.map_value(humidity)
 
+    #print(soil, fertilizer, water, light, temperature, humidity, location)
+
     return location
 
-locations = []
-for seed in seeds:
-    locations.append(map_seed_to_location(seed))
+min_location = map_seed_to_location(seeds[0])
 
-print(min(locations))
+count = 0
+for i in range(0, len(seeds) // 2):
+    for offset in range(0, seeds[i * 2 + 1]):
+        count += 1
+        if count % 1000000 == 0:
+            print(count)
+        seed = seeds[i * 2] + offset
+        cur = map_seed_to_location(seed)
+        if cur < min_location:
+            min_location = cur
+            print(seed, cur)
+
+print(min_location)
