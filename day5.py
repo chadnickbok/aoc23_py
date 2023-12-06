@@ -8,18 +8,46 @@ with open(sys.argv[1]) as f:
 seeds = [int(x) for x in lines[0].strip().split(":")[1].strip().split()]
 print(seeds)
 
-seed_to_soil = {}
-soil_to_fertilizer = {}
-fertilizer_to_water = {}
-water_to_light = {}
-light_to_temperature = {}
-temperature_to_humidity = {}
-humidity_to_location = {}
+class RangeMap():
+    def __init__(self, dest_start, source_start, range_len): 
+        self.dest_start = dest_start
+        self.source_start = source_start
+        self.range_len = range_len
 
+    def contains_value(self, val):
+        if val > self.source_start and val < self.source_start + self.range_len:
+            return True
+        return False
+
+    def map_value(self, val):
+        offset = val - self.source_start
+        return offset + self.dest_start
+
+
+class RangeMapper():
+    def __init__(self):
+        self.ranges = []
+
+    def add_range(self, dest_start, source_start, range_len):
+        self.ranges.append(RangeMap(dest_start, source_start, range_len))
+
+    def map_value(self, val):
+        for r in self.ranges:
+            if r.contains_value(val):
+                return r.map_value(val)
+        return val
+
+
+seed_to_soil = RangeMapper()
+soil_to_fertilizer = RangeMapper()
+fertilizer_to_water = RangeMapper()
+water_to_light = RangeMapper()
+light_to_temperature = RangeMapper()
+temperature_to_humidity = RangeMapper()
+humidity_to_location = RangeMapper()
 
 cur_map = seed_to_soil
 for line in lines[1:]:
-    print(line)
     line = line.strip()
     if len(line) == 0:
         continue
@@ -57,39 +85,18 @@ for line in lines[1:]:
     dest_start = parts[0]
     source_start = parts[1]
     range_len = parts[2]
-
-    for i in range(0, range_len):
-        cur_map[source_start + i] = dest_start + i
+    
+    cur_map.add_range(dest_start, source_start, range_len)
 
 
 def map_seed_to_location(seed):
-    soil = seed
-    if seed in seed_to_soil:
-        soil = seed_to_soil[seed]
-
-    fertilizer = soil
-    if soil in soil_to_fertilizer:
-        fertilizer = soil_to_fertilizer[soil]
-
-    water = fertilizer
-    if fertilizer in fertilizer_to_water:
-        water = fertilizer_to_water[fertilizer]
-
-    light = water
-    if water in water_to_light:
-        light = water_to_light[water]
-
-    temperature = light
-    if light in light_to_temperature:
-        temperature = light_to_temperature[light]
-
-    humidity = temperature
-    if temperature in temperature_to_humidity:
-        humidity = temperature_to_humidity[temperature]
-
-    location = humidity
-    if humidity in humidity_to_location:
-        location = humidity_to_location[humidity]
+    soil = seed_to_soil.map_value(seed)
+    fertilizer = soil_to_fertilizer.map_value(soil)
+    water = fertilizer_to_water.map_value(fertilizer)
+    light = water_to_light.map_value(water)
+    temperature = light_to_temperature.map_value(light)
+    humidity = temperature_to_humidity.map_value(temperature)
+    location = humidity_to_location.map_value(humidity)
 
     return location
 
