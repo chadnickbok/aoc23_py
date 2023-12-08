@@ -6,6 +6,7 @@ with open(sys.argv[1]) as f:
     lines = f.readlines()
 
 card_vals = {
+    'J': -1,
     '2': 0,
     '3': 1,
     '4': 2,
@@ -15,10 +16,20 @@ card_vals = {
     '8': 6,
     '9': 7,
     'T': 8,
-    'J': 9,
     'Q': 10,
     'K': 11,
     'A': 12
+}
+
+hand_types = {
+    0: "Unknown",
+    1: "High Card",
+    2: "Pair",
+    3: "Two Pair",
+    4: "Three of kind",
+    5: "Full house",
+    6: "Four of kind",
+    7: "Five of kind",
 }
 
 class Hand():
@@ -27,11 +38,23 @@ class Hand():
         self.bid = bid
         
         counts = {}
+        jokers = 0
+
         for c in cards:
-            if c in counts:
+            if c == 'J':
+                jokers += 1
+            elif c in counts:
                 counts[c] += 1
             else:
                 counts[c] = 1
+
+        if jokers == 5:
+            counts['A'] = 5
+            jokers = 0
+
+        max_c = max(counts, key=counts.get)
+        counts[max_c] += jokers
+        print(cards, counts)
 
         self.hand_type = 0
         if len(counts) == 5:
@@ -72,7 +95,7 @@ class Hand():
         return self.__str__()
 
     def __str__(self):
-        return self.cards + " " + str(self.hand_type) + " " + str(self.bid)
+        return self.cards + " " + hand_types[self.hand_type] + " " + str(self.bid)
 
 hands = []
 for line in lines:
