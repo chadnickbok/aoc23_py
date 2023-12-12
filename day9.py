@@ -20,6 +20,7 @@ def is_all_zeros(vals):
 with open(sys.argv[1]) as f:
     lines = f.readlines()
 
+
 next_vals = []
 for line in lines:
     vals = [int(x) for x in line.strip().split()]
@@ -27,15 +28,16 @@ for line in lines:
     diffs = [find_differences(vals)]
     while not is_all_zeros(diffs[-1]):
         diffs.append(find_differences(diffs[-1]))
-        print(diffs)
 
+    print([vals] + diffs)
     diffs.reverse()
 
     next_val = 0
     for diff in diffs:
-        next_val += diff[-1]
+        next_val = diff[0] - next_val
+        print(next_val)
 
-    print(vals[-1] + next_val)
-    next_vals.append(vals[-1] + next_val)
+    print(vals[0] - next_val)
+    next_vals.append(vals[0] - next_val)
 
 print(sum(next_vals))
