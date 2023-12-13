@@ -69,13 +69,12 @@ elif next_dir(left, east) is not None:
     from_dir = east
 
 
+pipe_positions = set([start, cur_pos])
 print("starting at", cur_pos)
 count = 0
 while cur_pos != start:
     cur_pipe = lines[cur_pos[1]][cur_pos[0]]
     d = next_dir(cur_pipe, from_dir)
-
-    print(count, cur_pos, cur_pipe)
 
     if d == north:
         cur_pos = (cur_pos[0], cur_pos[1] - 1)
@@ -93,5 +92,41 @@ while cur_pos != start:
         break
     
     count += 1
+    pipe_positions.add(cur_pos)
 
 print(count // 2 + 1)
+
+print("Finding enclosed squares")
+
+lines[start[1]] = lines[start[1]].replace('S', 'J')
+
+enclosed_count = 0
+for j in range(0, len(lines)):
+    for i in range(0, len(lines[0])):
+        cur_pos = (i, j)
+        if cur_pos in pipe_positions:
+            continue
+
+        up_count = 0
+        down_count = 0
+
+        for x in range(i + 1, len(lines[0])):
+            if (x, j) in pipe_positions:
+                p = lines[j][x]
+                if p == "-" or p == ".":
+                    continue
+                if p == "|":
+                    up_count += 1
+                    down_count += 1
+                elif p in ['J', 'L']:
+                    up_count += 1
+                else:
+                    down_count += 1
+
+        if up_count > 0 and down_count > 0:
+            pipes = min(up_count, down_count)
+            if pipes % 2 == 1:
+                enclosed_count += 1
+
+print(enclosed_count)
+
