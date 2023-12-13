@@ -61,7 +61,6 @@ def calc_distance(a, b):
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 min_distances = []
-pairs = set()
 for ga in range(0, len(galaxies)):
     for gb in range(ga + 1, len(galaxies)):
         d = calc_distance(galaxies[ga], galaxies[gb])
@@ -71,3 +70,49 @@ print(sum(min_distances))
 
 
 print(calc_distance((1, 6), (5, 11)))
+
+empty_rows = []
+
+# Find empty rows
+for i in range(0, len(lines)):
+    is_empty = True
+    for c in lines[i]:
+        if c == "#":
+            is_empty = False
+            break
+    if is_empty:
+        empty_rows.append(i)
+
+galaxies = []
+for j in range(0, len(lines)):
+    for i in range(0, len(lines[0])):
+        if lines[j][i] != "#":
+            continue
+
+        x = i
+        y = j
+        for col in empty_cols:
+            if i > col:
+                x += (1000000 - 1)
+
+        for row in empty_rows:
+            if j > row:
+                y += (1000000 - 1)
+
+        galaxies.append((x, y))
+
+
+min_distances = []
+for ga in range(0, len(galaxies)):
+    for gb in range(ga + 1, len(galaxies)):
+        d = calc_distance(galaxies[ga], galaxies[gb])
+        min_distances.append(d)
+
+print(sum(min_distances))
+
+
+
+
+
+
+
