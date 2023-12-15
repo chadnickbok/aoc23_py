@@ -9,13 +9,19 @@ with open(sys.argv[1]) as f:
 inputs = [line.strip().split() for line in lines]
 
 def get_possibilities(s, sizes, count, cache):
+    key = json.dumps((s, sizes, count))
+    if key in cache:
+        return cache[key]
+
     if len(s) == 0:
         # Reached the end of the string
         if len(sizes) == 0 and count == 0:
             # This is a possibility
+            cache[key] = 1
             return 1
         else:
             # Dead end
+            cache[key] = 0
             return 0
 
     if s[0] == "?":
@@ -36,6 +42,7 @@ def get_possibilities(s, sizes, count, cache):
         elif count == 0:
             n += get_possibilities(s[1:], sizes, 0, cache)
 
+    cache[key] = n
     return n
 
 
