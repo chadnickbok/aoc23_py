@@ -49,3 +49,13 @@ for t in inputs:
     total += p
 
 print(total)
+
+total = 0
+for t in inputs:
+    s = "?".join([t[0]] * 5) + "."
+    sizes = [int(x) for x in t[1].split(",")] * 5
+
+    p = get_possibilities(s, sizes, 0, {})
+    print(s, sizes, p)
+    total += p
+print(total)
