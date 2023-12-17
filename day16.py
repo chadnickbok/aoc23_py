@@ -16,6 +16,14 @@ for line in tiles:
 
 direction_cache = set()
 
+next_tiles = [{"pos": (0, 0), "dir": 'r'}]
+
+def add_next(pos, dir):
+    next_tiles.append({
+        "pos": pos,
+        "dir": dir
+    })
+
 # Energize the tile at (x, y), given a certain direction in 'u', 'd', 'l', 'r'
 # Then figure out what the next direction to go in is.
 def energize_tiles(pos, direction):
@@ -49,7 +57,7 @@ def energize_tiles(pos, direction):
         elif direction == 'u':
             next_pos = (pos[0], pos[1] - 1)
 
-        energize_tiles(next_pos, direction)
+        add_next(next_pos, direction)
 
     elif cur == '/':
         # Reflect
@@ -70,7 +78,7 @@ def energize_tiles(pos, direction):
             next_direction = 'r'
             next_pos = (pos[0] + 1, pos[1])
 
-        energize_tiles(next_pos, next_direction)
+        add_next(next_pos, next_direction)
 
     elif cur == '\\':
         # Reflect
@@ -91,41 +99,41 @@ def energize_tiles(pos, direction):
             next_direction = 'l'
             next_pos = (pos[0] - 1, pos[1])
 
-        energize_tiles(next_pos, next_direction)
+        add_next(next_pos, next_direction)
 
     elif cur == '-':
         if direction == 'r':
             next_pos = (pos[0] + 1, pos[1])
-            energize_tiles(next_pos, direction)
+            add_next(next_pos, direction)
         elif direction == 'l':
             next_pos = (pos[0] - 1, pos[1])
-            energize_tiles(next_pos, direction)
+            add_next(next_pos, direction)
         elif direction == 'u' or direction == 'd':
             l_pos = (pos[0] - 1, pos[1])
-            energize_tiles(l_pos, 'l')
+            add_next(l_pos, 'l')
 
             r_pos = (pos[0] + 1, pos[1])
-            energize_tiles(r_pos, 'r')
+            add_next(r_pos, 'r')
 
     elif cur == '|':
         print("Handling beam split")
         if direction == 'd':
             next_pos = (pos[0], pos[1] + 1)
-            energize_tiles(next_pos, direction)
+            add_next(next_pos, direction)
         elif direction == 'u':
             next_pos = (pos[0], pos[1] - 1)
-            energize_tiles(next_pos, direction)
+            add_next(next_pos, direction)
         elif direction == 'r' or direction == 'l':
             d_pos = (pos[0], pos[1] + 1)
-            energize_tiles(d_pos, 'd')
+            add_next(d_pos, 'd')
 
             u_pos = (pos[0], pos[1] - 1)
-            energize_tiles(u_pos, 'u')
+            add_next(u_pos, 'u')
 
-energize_tiles((0, 0), 'r')
-for line in energized_tiles:
-    print("".join(line))
 
+while len(next_tiles) > 0:
+    energize_tiles(next_tiles[0]["pos"], next_tiles[0]["dir"])
+    next_tiles = next_tiles[1:]
 
 total = 0
 for line in energized_tiles:
