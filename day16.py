@@ -7,17 +7,6 @@ with open(sys.argv[1]) as f:
 
 tiles = [line.strip() for line in lines]
 
-energized_tiles = []
-for line in tiles:
-    cur = []
-    for _ in line:
-        cur.append(".")
-    energized_tiles.append(cur)
-
-direction_cache = set()
-
-next_tiles = [{"pos": (0, 0), "dir": 'r'}]
-
 def add_next(pos, dir):
     next_tiles.append({
         "pos": pos,
@@ -28,7 +17,6 @@ def add_next(pos, dir):
 # Then figure out what the next direction to go in is.
 def energize_tiles(pos, direction):
     # Check x is within bounds
-    print(pos)
     if pos[0] < 0 or pos[0] >= len(tiles[0]):
         return
 
@@ -116,7 +104,6 @@ def energize_tiles(pos, direction):
             add_next(r_pos, 'r')
 
     elif cur == '|':
-        print("Handling beam split")
         if direction == 'd':
             next_pos = (pos[0], pos[1] + 1)
             add_next(next_pos, direction)
@@ -131,13 +118,115 @@ def energize_tiles(pos, direction):
             add_next(u_pos, 'u')
 
 
-while len(next_tiles) > 0:
-    energize_tiles(next_tiles[0]["pos"], next_tiles[0]["dir"])
-    next_tiles = next_tiles[1:]
 
-total = 0
-for line in energized_tiles:
-    for c in line:
-        if c == "#":
-            total += 1
-print(total)
+
+max_energized = 0
+max_energized_tiles = []
+
+
+for j in range(0, len(tiles)):
+    energized_tiles = []
+    for line in tiles:
+        cur = []
+        for _ in line:
+            cur.append(".")
+        energized_tiles.append(cur)
+    direction_cache = set()
+
+    next_tiles = [{"pos": (0, j), "dir": 'r'}]
+
+    while len(next_tiles) > 0:
+        energize_tiles(next_tiles[0]["pos"], next_tiles[0]["dir"])
+        next_tiles = next_tiles[1:]
+
+    total = 0
+    for line in energized_tiles:
+        for c in line:
+            if c == "#":
+                total += 1
+
+    if total > max_energized:
+        max_energized = total
+        max_energized_tiles = energized_tiles
+
+for i in range(0, len(tiles[0])):
+    energized_tiles = []
+    for line in tiles:
+        cur = []
+        for _ in line:
+            cur.append(".")
+        energized_tiles.append(cur)
+    direction_cache = set()
+    next_tiles = [{"pos": (i, 0), "dir": 'd'}]
+
+    while len(next_tiles) > 0:
+        energize_tiles(next_tiles[0]["pos"], next_tiles[0]["dir"])
+        next_tiles = next_tiles[1:]
+
+    total = 0
+    for line in energized_tiles:
+        for c in line:
+            if c == "#":
+                total += 1
+    print(total)
+
+    if total > max_energized:
+        max_energized = total
+        max_energized_tiles = energized_tiles
+
+
+for j in range(0, len(tiles)):
+    energized_tiles = []
+    for line in tiles:
+        cur = []
+        for _ in line:
+            cur.append(".")
+        energized_tiles.append(cur)
+    direction_cache = set()
+    next_tiles = [{"pos": (len(tiles[0]) - 1, j), "dir": 'l'}]
+
+    while len(next_tiles) > 0:
+        energize_tiles(next_tiles[0]["pos"], next_tiles[0]["dir"])
+        next_tiles = next_tiles[1:]
+
+    total = 0
+    for line in energized_tiles:
+        for c in line:
+            if c == "#":
+                total += 1
+    print(total)
+    if total == 0:
+        print(tiles[j][len(tiles[0]) - 1])
+
+    if total > max_energized:
+        max_energized = total
+        max_energized_tiles = energized_tiles
+
+for i in range(0, len(tiles[0])):
+    energized_tiles = []
+    for line in tiles:
+        cur = []
+        for _ in line:
+            cur.append(".")
+        energized_tiles.append(cur)
+    direction_cache = set()
+    next_tiles = [{"pos": (i, len(tiles) - 1), "dir": 'u'}]
+
+    while len(next_tiles) > 0:
+        energize_tiles(next_tiles[0]["pos"], next_tiles[0]["dir"])
+        next_tiles = next_tiles[1:]
+
+    total = 0
+    for line in energized_tiles:
+        for c in line:
+            if c == "#":
+                total += 1
+    print(total)
+
+    if total > max_energized:
+        max_energized = total
+        max_energized_tiles = energized_tiles
+
+print(max_energized)
+for line in max_energized_tiles:
+    print("".join(line))
