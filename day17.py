@@ -27,8 +27,9 @@ def findMinHeat(startPos, endPos):
 
     posQ = [{
         # Pos, Dir, Cost - Tuple for hashing
-        "node": (startPos, 'x', 0),
+        "node": (startPos, 'o', 0),
         "cost": 0,
+        "path": []
     }]
 
     visited = set()
@@ -43,62 +44,67 @@ def findMinHeat(startPos, endPos):
         visited.add(cur["node"])
 
         cur_pos = cur["node"][0]
-        if cur_pos == endPos:
-            print("Final cost", cur["cost"])
-            return cur["cost"]
-    
         cur_dir = cur["node"][1]
+        cur_count = cur["node"][2]
+
+        if cur_pos == endPos and cur_count > 3:
+            print("Final cost", cur)
+            return cur["cost"]
 
         # Go right
         r_pos = (cur_pos[0] + 1, cur_pos[1])
         if cur_dir != "l" and r_pos[0] < len(heats[0]):
-            r_count = 0
-            if cur_dir == "r":
-                r_count = cur["node"][2] + 1
+            r_count = 1
+            if cur_dir == "r" or cur_dir =="o":
+                r_count = cur_count + 1
 
-            if r_count < 3:
+            if (cur_dir in ["r", "o"] and r_count < 11) or (cur_dir != "r" and cur_count > 3):
                 insert_sorted(posQ, {
                     "node": (r_pos, 'r', r_count),
-                    "cost": cur["cost"] + heats[r_pos[1]][r_pos[0]]
+                    "cost": cur["cost"] + heats[r_pos[1]][r_pos[0]],
+                    "path": cur["path"] + ["r"]
                 })
 
         # Go left
         l_pos = (cur_pos[0] - 1, cur_pos[1])
         if cur_dir != "r" and l_pos[0] > 0:
-            l_count = 0
+            l_count = 1
             if cur["node"][1] == "l":
-                l_count = cur["node"][2] + 1
+                l_count = cur_count + 1
 
-            if l_count < 3:
+            if (cur_dir == "l" and l_count < 11) or (cur_dir != "l" and cur_count > 3):
                 insert_sorted(posQ, {
                     "node": (l_pos, 'l', l_count),
-                    "cost": cur["cost"] + heats[l_pos[1]][l_pos[0]]
+                    "cost": cur["cost"] + heats[l_pos[1]][l_pos[0]],
+                    "path": cur["path"] + ["l"]
                 })
 
         # Go down
         d_pos = (cur_pos[0], cur_pos[1] + 1)
         if cur_dir != "u" and d_pos[1] < len(heats):
-            d_count = 0
-            if cur["node"][1] == "d":
+            d_count = 1
+            if cur["node"][1] in ["d", "o"]:
                 d_count = cur["node"][2] + 1
 
-            if d_count < 3:
+            if (cur_dir in ["d", "o"] and d_count < 11) or (cur_dir != "d" and cur_count > 3):
                 insert_sorted(posQ, {
                     "node": (d_pos, 'd', d_count),
-                    "cost": cur["cost"] + heats[d_pos[1]][d_pos[0]]
+                    "cost": cur["cost"] + heats[d_pos[1]][d_pos[0]],
+                    "path": cur["path"] + ["d"]
                 })
 
         # Go up
         u_pos = (cur_pos[0], cur_pos[1] - 1)
         if cur_dir != "d" and u_pos[1] > 0:
-            u_count = 0
+            u_count = 1
             if cur["node"][1] == "u":
                 u_count = cur["node"][2] + 1
 
-            if u_count < 3:
+            if (cur_dir == "u" and u_count < 11) or (cur_dir != "u" and cur_count > 3):
                 insert_sorted(posQ, {
                     "node": (u_pos, 'u', u_count),
-                    "cost": cur["cost"] + heats[u_pos[1]][u_pos[0]]
+                    "cost": cur["cost"] + heats[u_pos[1]][u_pos[0]],
+                    "path": cur["path"] + ["u"]
                 })
 
 
